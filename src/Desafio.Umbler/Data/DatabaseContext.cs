@@ -1,7 +1,7 @@
 using Desafio.Umbler.Service.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Desafio.Umbler.Models
+namespace Desafio.Umbler.Data
 {
     public class DatabaseContext : DbContext
     {

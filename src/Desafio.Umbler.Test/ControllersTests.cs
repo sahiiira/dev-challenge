@@ -1,4 +1,5 @@
 using Desafio.Umbler.Controllers;
+using Desafio.Umbler.Data;
 using Desafio.Umbler.Models;
 using Desafio.Umbler.Service.Entities;
 using DnsClient;
