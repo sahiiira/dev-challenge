@@ -7,6 +7,7 @@ using DnsClient;
 using Desafio.Umbler.Service.Entities;
 using Desafio.Umbler.Service.DTOs;
 using Desafio.Umbler.Data.Repository;
+using DnsClient.Protocol;
 
 namespace Desafio.Umbler.Controllers
 {
@@ -32,28 +33,20 @@ namespace Desafio.Umbler.Controllers
 
                 if (domain == null)
                 {
-                    var response = await WhoisClient.QueryAsync(domainName);
+                    domain = new Domain(domainName);
 
-                    var result = await _lookupClient.QueryAsync(domainName, QueryType.A);
-                    var record = result.Answers.ARecords().FirstOrDefault();
-                    var address = record?.Address;
-                    var ip = address?.ToString();
+                    var (result, record) = await SearchForDomain(domainName);
 
-                    domain = new Domain(domainName, ip, response.Raw, response.OrganizationName, record?.TimeToLive ?? 0);
+                    domain.SetDomain(result, record);
 
                     _repDomain.Add(domain);
                 }
 
                 if (DateTime.Now.Subtract(domain.UpdatedAt).TotalMinutes > domain.Ttl)
                 {
-                    var response = await WhoisClient.QueryAsync(domainName);
+                    var (result, record) = await SearchForDomain(domainName);
 
-                    var result = await _lookupClient.QueryAsync(domainName, QueryType.A);
-                    var record = result.Answers.ARecords().FirstOrDefault();
-                    var address = record?.Address;
-                    var ip = address?.ToString();
-
-                    domain.Update(domainName, ip, response.Raw, response.OrganizationName, record?.TimeToLive ?? 0);
+                    domain.SetDomain(result, record);
                 }
 
                 await _repDomain.SaveAsync();
@@ -63,6 +56,23 @@ namespace Desafio.Umbler.Controllers
             catch (Exception e)
             {
                 return BadRequest("Não foi possível obter as informações do domínio: " + e.Message);
+            }
+        }
+
+        private async Task<(WhoisResponse response, ARecord record)> SearchForDomain(string domainName)
+        {
+            try
+            {
+                var response = await WhoisClient.QueryAsync(domainName);
+
+                var result = await _lookupClient.QueryAsync(domainName, QueryType.A);
+                var record = result.Answers.ARecords().FirstOrDefault();
+
+                return (response, record);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
             }
         }
 
