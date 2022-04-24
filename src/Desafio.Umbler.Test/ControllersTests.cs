@@ -1,13 +1,12 @@
 using Desafio.Umbler.Controllers;
 using Desafio.Umbler.Models;
+using Desafio.Umbler.Service.Entities;
 using DnsClient;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System;
-using System.Threading.Tasks;
 
 namespace Desafio.Umbler.Test
 {
@@ -54,8 +53,8 @@ namespace Desafio.Umbler.Test
                 .UseInMemoryDatabase(databaseName: "Find_searches_url")
                 .Options;
 
-            var domain = new Domain { Id = 1, Ip = "192.168.0.1", Name = "test.com", UpdatedAt = DateTime.Now, HostedAt = "umbler.corp", Ttl = 60, WhoIs = "Ns.umbler.com" };
-
+            var domain = new Domain("test.com", "192.168.0.1", "Ns.umbler.com", "umbler.corp", 60);
+            
             // Insert seed data into the database using one instance of the context
             using (var db = new DatabaseContext(options))
             {

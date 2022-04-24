@@ -6,10 +6,11 @@ using Desafio.Umbler.Models;
 using Whois.NET;
 using Microsoft.EntityFrameworkCore;
 using DnsClient;
+using Desafio.Umbler.Service.Entities;
 
 namespace Desafio.Umbler.Controllers
 {
-    [Route("api")]
+    [Route("api/[controller]")]
     public class DomainController : Controller
     {
         private readonly DatabaseContext _db;
@@ -19,7 +20,7 @@ namespace Desafio.Umbler.Controllers
             _db = db;
         }
 
-        [HttpGet, Route("domain/{domainName}")]
+        [HttpGet, Route("{domainName}")]
         public async Task<IActionResult> Get(string domainName)
         {
             var domain = await _db.Domains.FirstOrDefaultAsync(d => d.Name == domainName);
@@ -36,15 +37,7 @@ namespace Desafio.Umbler.Controllers
 
                 var hostResponse = await WhoisClient.QueryAsync(ip);
 
-                domain = new Domain
-                {
-                    Name = domainName,
-                    Ip = ip,
-                    UpdatedAt = DateTime.Now,
-                    WhoIs = response.Raw,
-                    Ttl = record?.TimeToLive ?? 0,
-                    HostedAt = hostResponse.OrganizationName
-                };
+                domain = new Domain(domainName, ip, response.Raw, hostResponse.OrganizationName, record?.TimeToLive ?? 0);
 
                 _db.Domains.Add(domain);
             }
@@ -61,12 +54,7 @@ namespace Desafio.Umbler.Controllers
 
                 var hostResponse = await WhoisClient.QueryAsync(ip);
 
-                domain.Name = domainName;
-                domain.Ip = ip;
-                domain.UpdatedAt = DateTime.Now;
-                domain.WhoIs = response.Raw;
-                domain.Ttl = record?.TimeToLive ?? 0;
-                domain.HostedAt = hostResponse.OrganizationName;
+                domain.Update(domainName, ip, response.Raw, hostResponse.OrganizationName, record?.TimeToLive ?? 0);
             }
 
             await _db.SaveChangesAsync();
