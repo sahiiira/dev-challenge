@@ -7,6 +7,7 @@ using Whois.NET;
 using Microsoft.EntityFrameworkCore;
 using DnsClient;
 using Desafio.Umbler.Service.Entities;
+using Desafio.Umbler.Service.DTOs;
 
 namespace Desafio.Umbler.Controllers
 {
@@ -23,43 +24,61 @@ namespace Desafio.Umbler.Controllers
         [HttpGet, Route("{domainName}")]
         public async Task<IActionResult> Get(string domainName)
         {
-            var domain = await _db.Domains.FirstOrDefaultAsync(d => d.Name == domainName);
-
-            if (domain == null)
+            try
             {
-                var response = await WhoisClient.QueryAsync(domainName);
+                var domain = await _db.Domains.FirstOrDefaultAsync(d => d.Name == domainName);
 
-                var lookup = new LookupClient();
-                var result = await lookup.QueryAsync(domainName, QueryType.ANY);
-                var record = result.Answers.ARecords().FirstOrDefault();
-                var address = record?.Address;
-                var ip = address?.ToString();
+                if (domain == null)
+                {
+                    var response = await WhoisClient.QueryAsync(domainName);
 
-                var hostResponse = await WhoisClient.QueryAsync(ip);
+                    var lookup = new LookupClient();
+                    var result = await lookup.QueryAsync(domainName, QueryType.ANY);
+                    var record = result.Answers.ARecords().FirstOrDefault();
+                    var address = record?.Address;
+                    var ip = address?.ToString();
 
-                domain = new Domain(domainName, ip, response.Raw, hostResponse.OrganizationName, record?.TimeToLive ?? 0);
+                    var hostResponse = await WhoisClient.QueryAsync(ip);
 
-                _db.Domains.Add(domain);
+                    domain = new Domain(domainName, ip, response.Raw, hostResponse.OrganizationName, record?.TimeToLive ?? 0);
+
+                    _db.Domains.Add(domain);
+                }
+
+                if (DateTime.Now.Subtract(domain.UpdatedAt).TotalMinutes > domain.Ttl)
+                {
+                    var response = await WhoisClient.QueryAsync(domainName);
+
+                    var lookup = new LookupClient();
+                    var result = await lookup.QueryAsync(domainName, QueryType.ANY);
+                    var record = result.Answers.ARecords().FirstOrDefault();
+                    var address = record?.Address;
+                    var ip = address?.ToString();
+
+                    var hostResponse = await WhoisClient.QueryAsync(ip);
+
+                    domain.Update(domainName, ip, response.Raw, hostResponse.OrganizationName, record?.TimeToLive ?? 0);
+                }
+
+                await _db.SaveChangesAsync();
+
+                return Ok(ToDomainDTO(domain));
             }
-
-            if (DateTime.Now.Subtract(domain.UpdatedAt).TotalMinutes > domain.Ttl)
+            catch (Exception e)
             {
-                var response = await WhoisClient.QueryAsync(domainName);
-
-                var lookup = new LookupClient();
-                var result = await lookup.QueryAsync(domainName, QueryType.ANY);
-                var record = result.Answers.ARecords().FirstOrDefault();
-                var address = record?.Address;
-                var ip = address?.ToString();
-
-                var hostResponse = await WhoisClient.QueryAsync(ip);
-
-                domain.Update(domainName, ip, response.Raw, hostResponse.OrganizationName, record?.TimeToLive ?? 0);
+                return BadRequest(e.Message);
             }
+        }
 
-            await _db.SaveChangesAsync();
-
-            return Ok(domain);
+        private static DomainDTO ToDomainDTO(Domain domain)
+        {
+            return new DomainDTO()
+            {
+                Name = domain.Name,
+                Ip = domain.Ip,
+                WhoIs = domain.WhoIs,
+                HostedAt = domain.HostedAt
+            };
         }
     }
 }
