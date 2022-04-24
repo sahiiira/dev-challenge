@@ -1,5 +1,6 @@
 ﻿using System;
 using Desafio.Umbler.Data;
+using Desafio.Umbler.Data.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +42,7 @@ namespace Desafio.Umbler
                         .EnableDetailedErrors()
                 );
 
+            services.AddScoped<IDomainRepository, DomainRepository>();
 
             services.AddControllersWithViews();
         }

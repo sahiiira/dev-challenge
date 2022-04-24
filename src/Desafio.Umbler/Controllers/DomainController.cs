@@ -8,17 +8,21 @@ using DnsClient;
 using Desafio.Umbler.Service.Entities;
 using Desafio.Umbler.Service.DTOs;
 using Desafio.Umbler.Data;
+using Desafio.Umbler.Data.Repository;
 
 namespace Desafio.Umbler.Controllers
 {
     [Route("api/[controller]")]
     public class DomainController : Controller
     {
+        private readonly IDomainRepository _repDomain;
         private readonly DatabaseContext _db;
 
-        public DomainController(DatabaseContext db)
+        public DomainController(DatabaseContext db, 
+                                IDomainRepository repDomain)
         {
             _db = db;
+            _repDomain = repDomain;
         }
 
         [HttpGet, Route("{domainName}")]
@@ -42,7 +46,7 @@ namespace Desafio.Umbler.Controllers
 
                     domain = new Domain(domainName, ip, response.Raw, hostResponse.OrganizationName, record?.TimeToLive ?? 0);
 
-                    _db.Domains.Add(domain);
+                    _repDomain.Add(domain);
                 }
 
                 if (DateTime.Now.Subtract(domain.UpdatedAt).TotalMinutes > domain.Ttl)

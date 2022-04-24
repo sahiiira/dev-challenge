@@ -1,6 +1,8 @@
 using Desafio.Umbler.Controllers;
 using Desafio.Umbler.Data;
+using Desafio.Umbler.Data.Repository;
 using Desafio.Umbler.Models;
+using Desafio.Umbler.Service.DTOs;
 using Desafio.Umbler.Service.Entities;
 using DnsClient;
 using Microsoft.AspNetCore.Http;
@@ -66,13 +68,13 @@ namespace Desafio.Umbler.Test
             // Use a clean instance of the context to run the test
             using (var db = new DatabaseContext(options))
             {
-                var controller = new DomainController(db);
+                var repDomain = new DomainRepository(db);
+                var controller = new DomainController(db, repDomain);
 
                 //act
                 var response = controller.Get("test.com");
                 var result = response.Result as OkObjectResult;
-                var obj = result.Value as Domain;
-                Assert.AreEqual(obj.Id, domain.Id);
+                var obj = result.Value as DomainDTO;
                 Assert.AreEqual(obj.Ip, domain.Ip);
                 Assert.AreEqual(obj.Name, domain.Name);
             }
@@ -89,7 +91,8 @@ namespace Desafio.Umbler.Test
             // Use a clean instance of the context to run the test
             using (var db = new DatabaseContext(options))
             {
-                var controller = new DomainController(db);
+                var repDomain = new DomainRepository(db);
+                var controller = new DomainController(db, repDomain);
 
                 //act
                 var response = controller.Get("test.com");
@@ -118,7 +121,8 @@ namespace Desafio.Umbler.Test
             using (var db = new DatabaseContext(options))
             {
                 //inject lookupClient in controller constructor
-                var controller = new DomainController(db/*,IWhoisClient, lookupClient*/ );
+                var repDomain = new DomainRepository(db);
+                var controller = new DomainController(db, repDomain/*,IWhoisClient, lookupClient*/ );
 
                 //act
                 var response = controller.Get("test.com");
