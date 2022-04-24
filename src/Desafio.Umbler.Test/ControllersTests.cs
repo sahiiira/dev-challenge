@@ -56,7 +56,13 @@ namespace Desafio.Umbler.Test
                 .UseInMemoryDatabase(databaseName: "Find_searches_url")
                 .Options;
 
-            var domain = new Domain("test.com", "192.168.0.1", "Ns.umbler.com", "umbler.corp", 60);
+            var lookupClient = new Mock<ILookupClient>();
+            var domainName = "test.com";
+
+            var dnsResponse = new Mock<IDnsQueryResponse>();
+            lookupClient.Setup(l => l.QueryAsync(domainName, QueryType.A, QueryClass.IN, System.Threading.CancellationToken.None)).ReturnsAsync(dnsResponse.Object);
+
+            var domain = new Domain(domainName, "192.168.0.1", "Ns.umbler.com", "umbler.corp", 60);
             
             // Insert seed data into the database using one instance of the context
             using (var db = new DatabaseContext(options))
@@ -69,7 +75,7 @@ namespace Desafio.Umbler.Test
             using (var db = new DatabaseContext(options))
             {
                 var repDomain = new DomainRepository(db);
-                var controller = new DomainController(db, repDomain);
+                var controller = new DomainController(repDomain, (ILookupClient)lookupClient);
 
                 //act
                 var response = controller.Get("test.com");
@@ -88,16 +94,22 @@ namespace Desafio.Umbler.Test
                 .UseInMemoryDatabase(databaseName: "Find_searches_url")
                 .Options;
 
+            var lookupClient = new Mock<ILookupClient>();
+            var domainName = "test.com";
+
+            var dnsResponse = new Mock<IDnsQueryResponse>();
+            lookupClient.Setup(l => l.QueryAsync(domainName, QueryType.A, QueryClass.IN, System.Threading.CancellationToken.None)).ReturnsAsync(dnsResponse.Object);
+
             // Use a clean instance of the context to run the test
             using (var db = new DatabaseContext(options))
             {
                 var repDomain = new DomainRepository(db);
-                var controller = new DomainController(db, repDomain);
+                var controller = new DomainController(repDomain, (ILookupClient)lookupClient);
 
                 //act
-                var response = controller.Get("test.com");
+                var response = controller.Get(domainName);
                 var result = response.Result as OkObjectResult;
-                var obj = result.Value as Domain;
+                var obj = result.Value as DomainDTO;
                 Assert.IsNotNull(obj);
             }
         }
@@ -110,7 +122,7 @@ namespace Desafio.Umbler.Test
             var domainName = "test.com";
 
             var dnsResponse = new Mock<IDnsQueryResponse>();
-            lookupClient.Setup(l => l.QueryAsync(domainName, QueryType.ANY, QueryClass.IN, System.Threading.CancellationToken.None)).ReturnsAsync(dnsResponse.Object);
+            lookupClient.Setup(l => l.QueryAsync(domainName, QueryType.A, QueryClass.IN, System.Threading.CancellationToken.None)).ReturnsAsync(dnsResponse.Object);
 
             //arrange 
             var options = new DbContextOptionsBuilder<DatabaseContext>()
@@ -122,12 +134,12 @@ namespace Desafio.Umbler.Test
             {
                 //inject lookupClient in controller constructor
                 var repDomain = new DomainRepository(db);
-                var controller = new DomainController(db, repDomain/*,IWhoisClient, lookupClient*/ );
+                var controller = new DomainController(repDomain,/*IWhoisClient,*/(ILookupClient)lookupClient );
 
                 //act
                 var response = controller.Get("test.com");
                 var result = response.Result as OkObjectResult;
-                var obj = result.Value as Domain;
+                var obj = result.Value as DomainDTO;
                 Assert.IsNotNull(obj);
             }
         }

@@ -42,6 +42,5 @@ namespace Desafio.Umbler.Service.Entities
 
             return this;
         }
-
     }
 }

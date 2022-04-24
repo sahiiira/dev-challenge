@@ -3,11 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Whois.NET;
-using Microsoft.EntityFrameworkCore;
 using DnsClient;
 using Desafio.Umbler.Service.Entities;
 using Desafio.Umbler.Service.DTOs;
-using Desafio.Umbler.Data;
 using Desafio.Umbler.Data.Repository;
 
 namespace Desafio.Umbler.Controllers
@@ -16,13 +14,13 @@ namespace Desafio.Umbler.Controllers
     public class DomainController : Controller
     {
         private readonly IDomainRepository _repDomain;
-        private readonly DatabaseContext _db;
+        private readonly ILookupClient _lookupClient;
 
-        public DomainController(DatabaseContext db, 
-                                IDomainRepository repDomain)
+        public DomainController(IDomainRepository repDomain, 
+                                ILookupClient lookupClient)
         {
-            _db = db;
             _repDomain = repDomain;
+            _lookupClient = lookupClient;
         }
 
         [HttpGet, Route("{domainName}")]
@@ -36,8 +34,7 @@ namespace Desafio.Umbler.Controllers
                 {
                     var response = await WhoisClient.QueryAsync(domainName);
 
-                    var lookup = new LookupClient();
-                    var result = await lookup.QueryAsync(domainName, QueryType.ANY);
+                    var result = await _lookupClient.QueryAsync(domainName, QueryType.A);
                     var record = result.Answers.ARecords().FirstOrDefault();
                     var address = record?.Address;
                     var ip = address?.ToString();
@@ -53,8 +50,7 @@ namespace Desafio.Umbler.Controllers
                 {
                     var response = await WhoisClient.QueryAsync(domainName);
 
-                    var lookup = new LookupClient();
-                    var result = await lookup.QueryAsync(domainName, QueryType.ANY);
+                    var result = await _lookupClient.QueryAsync(domainName, QueryType.A);
                     var record = result.Answers.ARecords().FirstOrDefault();
                     var address = record?.Address;
                     var ip = address?.ToString();
@@ -72,7 +68,7 @@ namespace Desafio.Umbler.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return BadRequest("Não foi possível obter as informações do domínio: " + e.Message);
             }
         }
 

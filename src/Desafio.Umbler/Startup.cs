@@ -1,6 +1,7 @@
 ﻿using System;
 using Desafio.Umbler.Data;
 using Desafio.Umbler.Data.Repository;
+using DnsClient;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +44,7 @@ namespace Desafio.Umbler
                 );
 
             services.AddScoped<IDomainRepository, DomainRepository>();
+            services.AddScoped<ILookupClient, LookupClient>();
 
             services.AddControllersWithViews();
         }
