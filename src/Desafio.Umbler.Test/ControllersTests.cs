@@ -75,7 +75,7 @@ namespace Desafio.Umbler.Test
             using (var db = new DatabaseContext(options))
             {
                 var repDomain = new DomainRepository(db);
-                var controller = new DomainController(repDomain, (ILookupClient)lookupClient);
+                var controller = new DomainController(repDomain, lookupClient.Object);
 
                 //act
                 var response = controller.Get("test.com");
@@ -104,7 +104,7 @@ namespace Desafio.Umbler.Test
             using (var db = new DatabaseContext(options))
             {
                 var repDomain = new DomainRepository(db);
-                var controller = new DomainController(repDomain, (ILookupClient)lookupClient);
+                var controller = new DomainController(repDomain, lookupClient.Object);
 
                 //act
                 var response = controller.Get(domainName);
@@ -134,7 +134,7 @@ namespace Desafio.Umbler.Test
             {
                 //inject lookupClient in controller constructor
                 var repDomain = new DomainRepository(db);
-                var controller = new DomainController(repDomain,/*IWhoisClient,*/(ILookupClient)lookupClient );
+                var controller = new DomainController(repDomain,/*IWhoisClient,*/lookupClient.Object );
 
                 //act
                 var response = controller.Get("test.com");

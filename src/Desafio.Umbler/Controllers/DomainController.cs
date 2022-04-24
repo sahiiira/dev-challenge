@@ -39,9 +39,7 @@ namespace Desafio.Umbler.Controllers
                     var address = record?.Address;
                     var ip = address?.ToString();
 
-                    var hostResponse = await WhoisClient.QueryAsync(ip);
-
-                    domain = new Domain(domainName, ip, response.Raw, hostResponse.OrganizationName, record?.TimeToLive ?? 0);
+                    domain = new Domain(domainName, ip, response.Raw, response.OrganizationName, record?.TimeToLive ?? 0);
 
                     _repDomain.Add(domain);
                 }
@@ -55,11 +53,7 @@ namespace Desafio.Umbler.Controllers
                     var address = record?.Address;
                     var ip = address?.ToString();
 
-                    var hostResponse = await WhoisClient.QueryAsync(ip);
-
-                    domain.Update(domainName, ip, response.Raw, hostResponse.OrganizationName, record?.TimeToLive ?? 0);
-
-                    _repDomain.Update(domain);
+                    domain.Update(domainName, ip, response.Raw, response.OrganizationName, record?.TimeToLive ?? 0);
                 }
 
                 await _repDomain.SaveAsync();
