@@ -30,7 +30,7 @@ namespace Desafio.Umbler.Controllers
         {
             try
             {
-                var domain = await _db.Domains.FirstOrDefaultAsync(d => d.Name == domainName);
+                var domain = await _repDomain.GetByNameAsync(domainName);
 
                 if (domain == null)
                 {
@@ -62,9 +62,11 @@ namespace Desafio.Umbler.Controllers
                     var hostResponse = await WhoisClient.QueryAsync(ip);
 
                     domain.Update(domainName, ip, response.Raw, hostResponse.OrganizationName, record?.TimeToLive ?? 0);
+
+                    _repDomain.Update(domain);
                 }
 
-                await _db.SaveChangesAsync();
+                await _repDomain.SaveAsync();
 
                 return Ok(ToDomainDTO(domain));
             }
