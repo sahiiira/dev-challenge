@@ -12,7 +12,7 @@ namespace Desafio.Umbler.Service.Entities
         public Domain(string name)
         {
             if (string.IsNullOrEmpty(name)) throw new Exception("O nome do domínio não deve ser nulo ou vazio.");
-            if (IsNameValid(name)) throw new Exception("O nome do domínio deve ser válido.");
+            if (!IsNameValid(name)) throw new Exception("O nome do domínio deve ser válido.");
 
             Name = name;
             UpdatedAt = DateTime.Now;
@@ -50,7 +50,7 @@ namespace Desafio.Umbler.Service.Entities
 
         public Domain SetARecord(string ip, string hostedAt, int ttl)
         {
-            if (IsIpValid(Ip)) throw new Exception("Deve ser um IPv4 válido.");
+            if (!IsIpValid(ip)) throw new Exception("Deve ser um IPv4 válido.");
 
             Ip = ip;
             Ttl = ttl;
@@ -67,7 +67,7 @@ namespace Desafio.Umbler.Service.Entities
 
         public bool IsIpValid(string ip)
         {
-            return new Regex(@"/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/").Match(ip).Success;
+            return new Regex(@"^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$").Match(ip).Success;
         }
     }
 }
