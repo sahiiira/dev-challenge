@@ -52,7 +52,7 @@ Para Rodar o projeto:
 Execute a migration no banco mysql:
 
 `dotnet tool update --global dotnet-ef`
-`dotnet tool ef database update`
+`dotnet ef database update`
 
 E após: 
 
