@@ -16,12 +16,15 @@ namespace Desafio.Umbler.Controllers
     {
         private readonly IDomainRepository _repDomain;
         private readonly ILookupClient _lookupClient;
+        private readonly IWhoisClient _whoisClient;
 
-        public DomainController(IDomainRepository repDomain, 
-                                ILookupClient lookupClient)
+        public DomainController(IDomainRepository repDomain,
+                                ILookupClient lookupClient,
+                                IWhoisClient whoisClient)
         {
             _repDomain = repDomain;
             _lookupClient = lookupClient;
+            _whoisClient = whoisClient;
         }
 
         [HttpGet, Route("{domainName}")]
@@ -63,7 +66,7 @@ namespace Desafio.Umbler.Controllers
         {
             try
             {
-                var response = await WhoisClient.QueryAsync(domainName);
+                var response = await _whoisClient.QueryAsync(domainName);
 
                 var result = await _lookupClient.QueryAsync(domainName, QueryType.A);
                 var record = result.Answers.ARecords().FirstOrDefault();
