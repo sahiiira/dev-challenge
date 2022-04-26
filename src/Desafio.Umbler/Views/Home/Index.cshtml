@@ -5,23 +5,54 @@
 <div id="mm-0" class="mm-page mm-slideout">
      
 <section id="domain-search">
-    <div class="container py-4 pb-md-5">			
-            <div id="box-result" class="row">
-                <div class="col-lg-9 col-md-8">   
-                        <label class="sr-only" for="txt-search">Domínio</label>
-                        <input class="form-control form-control-lg domain" id="txt-search" name="txt-search" placeholder="Digite o Domínio que deseja pesquisar" type="text" value="">
+    <div class="container py-4 pb-md-5">
+        <div id="box-result" class="row">
+            <div class="col-lg-9 col-md-8">
+                <label class="sr-only" for="txt-search">Domínio</label>
+                <input class="form-control form-control-lg domain" id="txt-search" name="txt-search" placeholder="Digite o Domínio que deseja pesquisar" type="text" value="">
+            </div>
+            <div class="col-lg-3 col-md-4 text-xs-right">
+                <button type="button" id="btn-search" name="name" class="btn btn-success btn-block btn-lg text-xs-center" data-loading-text="Pesquisando...">
+                    <i class="icon icon-search icon-white mr-1"></i>
+                    <span>Pesquisar...</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="alert" id="alert-box"></div>
+
+        <div class="container data-container w-100" id="results">
+            <div class="row hide" id="whois-results">
+            </div>
+            <div class="coll" id="domain-results">
+                <div class="data-label" id="domain-label">
+                    Domínio
                 </div>
-                <div class="col-lg-3 col-md-4 text-xs-right">
-                    <button type="button" id="btn-search" name="name" class="btn btn-success btn-block btn-lg text-xs-center" data-loading-text="Pesquisando...">
-                        <i class="icon icon-search icon-white mr-1"></i>
-                        <span>Pesquisar...</span>
-                    </button>
+                <div class="data" id="domain-data">
+                </div>
+            </div>
+            <div class="coll" id="ip-results">
+                <div class="data-label" id="ip-label">
+                    IP
+                </div>
+                <div class="data" id="ip-data">
+                </div>
+            </div>
+            <div class="coll" id="hostedat-results">
+                <div class="data-label" id="hostedat-label">
+                    Hospedado por
+                </div>
+                <div class="data" id="hostedat-data">
+                </div>
+            </div>
+            <div class="coll" id="whois-results">
+                <div class="data-label" id="whois-label">
+                    WhoIs
+                </div>
+                <div class="data" id="whois-data">
                 </div>
             </div>
 
-        <div class="container w-100">
-                <div class="row hide" id="whois-results">
-                </div>
         </div>
     </div>
 </section>
@@ -47,3 +78,30 @@
 
 <a id="back-top" href="javascript:void(0);" rel="nofollow" class="icon icon-arrow-upward icon-inverse icon-3x hidden-sm-down"></a>
 </div>
+
+<style>
+    .data-container {
+        padding: 10px;
+        visibility: hidden;
+    }
+    .coll {
+        display: flex;
+        margin: 5px;
+    }
+    .data-label {
+        font-size: 24px;
+        color: royalblue;
+        flex: 1
+    }
+    .data {
+        flex: 2;
+        font-size: 24px;
+    }
+    .alert {
+        padding: 20px;
+        background-color: #f44336;
+        color: white;
+        display: none;
+        margin: 5px
+    }
+</style>
