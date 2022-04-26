@@ -105,3 +105,7 @@ Back-End:
 - Da mesma forma, como solicitado, ao invés de retornar a própria entidade, criei o DomainDTO apenas com os dados necessários para a tela.
 - A minha ideia era fazer a divisão do código em 3 áreas (Api, Service e Data) utilizando Class Libraries e afins. Contudo, meu zero conhecimento com Migrations me impediu de colocá-lo na pasta de Data. Por fim, acabei criando pastas simples no Desafio.Umbler mesmo. A pasta de Api, que conteria os controller, se manteve como Controllers mesmo. A pasta de Service, com as entidades e DTO, possuem mesmo nome. E Data, com os repositórios e o contexto do banco.
 - Tentei codificar da forma mais organizada, retirando possíveis duplicidades e separando o código do controller nas pastas supracitadas. Dei uma atenção a mais para a entidade de Domain, tornando os métodos privados e fazendo algumas validações.
+
+Testes:
+- Talvez essa tenha sido a parte mais degenerada de todo o projeto. Como é possível perceber, eu também não possuo conhecimentos em teste unitário.
+- Vi que era preciso fazer o último teste funcionar, mas já aviso que isso não acontece hahaha. Tentei criar um wrapper para o WhoIsClient, inclusive eles estão na parte de Entities junto do Domain. Algo que me deixou extremamente curiosa é como o Domain_Moking_LookupClient  passa pelo teste e o Domain_Moking_WhoisClient não, sendo que são extremamente parecidos (aliás, fica o estudo pra mim em como testar cada injeção de dependência individualmente).
