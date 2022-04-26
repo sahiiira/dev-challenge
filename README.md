@@ -88,9 +88,20 @@ Se você rodar o projeto e testar um domínio, verá que ele já está funcionan
 # Entrega
 
 - Enviei o link do seu repositório com o código atualizado.
-- O repositório deve estar público para que possamos acessar..
+- O repositório deve estar público para que possamos acessar.
 - Modifique Este readme adicionando informações sobre os motivos das mudanças realizadas.
 
 # Modificações:
 
-- DESCREVA AQUI O OBJETIVO DAS MODIFICAÇÕES...
+Front-End:
+- Antes era mostrado um JSON com os dados da request. Como solicitado, para os dados de IP, DomainName, HostedAt e WhoIs foram criadas divs para cada um. Para este último, por ser maior (e possuir caracteres de escape) foi também formatado de forma a ficar mais legível.
+- Quando o back retorna uma mensagem de erro, é mostrado uma caixa com a mensagem.
+- Além da classe de Api já existente, criei a Domain e DOM. A classe de Domain seria equivalente com sua entidade presente no back-end, porém com algumas validações e campos próprios. Já a classe de Dom é responsável por gerenciar os resultados presentes na tela.
+- Foi realizada validação do domínio digitado por meio de Regex.
+- Eu não possuo alguma experiência com React ou Blazor (e web aplicações MVC, para falar a verdade) e como implementá-los nesse tipo de aplicação. Portanto, preferi me manter simples nesse quesito.
+
+Back-End:
+- Foram adicionados os try-catches necessários. Agora é possível retornar BadRequest() ao ocorrer algum erro.
+- Da mesma forma, como solicitado, ao invés de retornar a própria entidade, criei o DomainDTO apenas com os dados necessários para a tela.
+- A minha ideia era fazer a divisão do código em 3 áreas (Api, Service e Data) utilizando Class Libraries e afins. Contudo, meu zero conhecimento com Migrations me impediu de colocá-lo na pasta de Data. Por fim, acabei criando pastas simples no Desafio.Umbler mesmo. A pasta de Api, que conteria os controller, se manteve como Controllers mesmo. A pasta de Service, com as entidades e DTO, possuem mesmo nome. E Data, com os repositórios e o contexto do banco.
+- Tentei codificar da forma mais organizada, retirando possíveis duplicidades e separando o código do controller nas pastas supracitadas. Dei uma atenção a mais para a entidade de Domain, tornando os métodos privados e fazendo algumas validações.
